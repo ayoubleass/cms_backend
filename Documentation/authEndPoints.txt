@@ -1,0 +1,117 @@
+API Documentation
+This API provides user authentication and management features, including signup, login, password reset, and more.
+
+Endpoints
+Authentication Endpoints
+
+1. POST /signUp
+  Description: Registers a new user.
+  Body Parameters:
+  name (string): User's full name.
+  email (string): User's email address.
+  password (string): User's password (will be hashed).
+  phoneNumber (string): User's phone number.
+  isAdmin (boolean): Indicates if the user has admin privileges.
+  Success Response:
+  Code: 200
+  Content: json
+  
+    {
+      "name": "User Name",
+      "email": "user@example.com",
+      "phoneNumber": "1234567890",
+      "isAdmin": false
+    }
+  Error Responses:
+  Code: 400
+  Content: json
+  
+  { "error": "Failed to create user" }
+  Code: 500
+  Content: json
+  
+  { "error": "Something is wrong" }
+
+2. POST /login
+Description: Logs in an existing user and returns a token for authentication.
+Body Parameters:
+email (string): User's email address.
+password (string): User's password.
+Success Response:
+Code: 200
+Content: json
+
+{
+  "token": "generated_token_here",
+  "userData": {
+    "name": "User Name",
+    "email": "user@example.com",
+    "phoneNumber": "1234567890",
+    "isAdmin": false
+  }
+}
+Error Responses:
+Code: 404
+Content: json
+
+{ "error": "user not found email must be incorrect" }
+Code: 400
+Content: json
+
+{ "error": "Password is not a valid password" }
+Code: 500
+Content: json
+
+{ "error": "Server error" }
+
+
+3. POST /forgotPassword
+  Description: Sends a password reset link to the user's email.
+  Body Parameters:
+  email (string): The email address to reset the password for.
+  Success Response:
+  Code: 200
+  Content: json
+
+  {
+    "message": "Check your email for more details"
+  }
+  Error Responses:
+  Code: 400
+  Content:
+  json
+
+  { "error": "Email is required" }
+  Code: 404
+  Content:
+  json
+
+  { "error": "Email is incorrect" }
+  Code: 500
+  Content:
+  json
+
+  { "error": "Server error" }
+
+4. PUT /resetPassword
+  Description: Resets the user's password using a reset token.
+  Body Parameters:
+  email (string): The user's email address.
+  resetToken (string): The reset token received via email.
+  password (string): The new password.
+  Success Response:
+  Code: 200
+  Content: json
+    {
+      "message": "Password has been changed"
+    }
+  Error Responses:
+  Code: 400
+  Content: json
+    { "error": "User not found" }
+  Code: 401
+  Content: json
+    { "error": "Token is not valid" }
+  Code: 500
+  Content: json
+    { "error": "Failed to make changes" }
