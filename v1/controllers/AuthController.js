@@ -86,9 +86,8 @@ class Auth extends BaseController{
 
   static resetPassword = async (req, res) => {
     try {
-        const {email, resetToken, password} = req.body;
-        console.log(req.body)
-        const user = await User.findOne({where : {email}});
+        const {id, resetToken, password} = req.body;
+        const user = await User.findOne({where : {id}});
         if(!user) {
             return res.status(400).json({error : "User not found"});
         }

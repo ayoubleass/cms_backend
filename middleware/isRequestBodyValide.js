@@ -72,12 +72,6 @@ const resetPasswordValidate = async(req, res, next) => {
                 min : 5
             }
         },
-        resetToken : {
-            required: true
-        },
-        email : {
-            required : true,
-        }
     });
     const errors = validator.getErrors();
     if(errors && Object.entries(errors).length > 0){
