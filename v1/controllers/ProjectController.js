@@ -1,20 +1,23 @@
 const BaseController = require("./BaseController");
 const Project = require('../../models/Project');
 const Result = require('../../models/Results');
+const MonthlySearch = require("../../models/MonthlySearch");
 
 
 class ProjectController extends BaseController {
     static async create (req, res) {
         try {
-            const {name, description, url} = req.body;
-            if(!name || !description) {
-                return res.status(401).json({error: 'Missing fields name or description'});
+            const {name, description, url, selectedCountry , selectedLanguage,} = req.body;
+            if(!name, !selectedCountry, !selectedLanguage) {
+                return res.status(401).json({error: 'Missing fields name or locationCode or language'});
             }
             const newProject = await Project.create({
                 name,
                 description,
-                UserId : req.user.id,
+                userId : req.user.id,
                 url,
+                locationCode : selectedCountry.code,
+                selectedLanguage,
             });
             if(newProject === null){
                 return res.json({error : "Failed to create projecr"});
@@ -28,7 +31,7 @@ class ProjectController extends BaseController {
     
     static async update (req, res)  {
         const {id} = req.params;
-        const {name, description} = req.body;
+        const {name, description, locationCode, selectedLanguage} = req.body;
         const project = await Project.findByPk(id);
         if(project === null) {
             return res.status(404).json({error : 'project not found'});
@@ -38,7 +41,8 @@ class ProjectController extends BaseController {
         }
         project.name = name;
         project.description = description;
-    
+        project.selectedLanguage = selectedLanguage,
+        project.locationCode = locationCode;
         await project.save();
         return res.json({message : "Done the project has been created!"})
     }
@@ -66,9 +70,14 @@ class ProjectController extends BaseController {
         }
         const results = await Result.findAll({where : {ProjectId: id}});
         let newRes = []
+
         for (const result of results){
             if(!result.parent_id){
                 result.dataValues.suggestions = [];
+                const monthlySearches = await MonthlySearch.findAll({where : {
+                    ResultId : result.id
+                }})
+                result.dataValues.monthlySearch = monthlySearches;
                 newRes.push(result);
             }else{
                 const parent = newRes.find(r => r.id === result.parent_id);

@@ -15,10 +15,16 @@ const Project = sequelize.define('Project', {
 
     description : {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true,
     },
     url :{
         type : DataTypes.STRING,
+    },
+    locationCode : {
+        type: DataTypes.INTEGER
+    },
+    selectedLanguage : {
+        type: DataTypes.STRING,
     },
 }, {
     tableName : "projects",

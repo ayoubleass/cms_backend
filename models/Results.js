@@ -8,17 +8,15 @@ const Result = sequelize.define('Result', {
         autoIncrement: true,
         primaryKey: true,
     },
-
     keyword : {
         type: DataTypes.STRING,
         allowNull : false,
     },
-    keywordDifficulte:{
-        type: DataTypes.ENUM,
-        values: ['medium', 'hard', 'low'],
-        defaultValue: 'low'
+    keyword_difficulty:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
-    searchVolume : {
+    search_volume : {
         type: DataTypes.INTEGER,
         validate: {
             min : 0,
@@ -27,7 +25,7 @@ const Result = sequelize.define('Result', {
     parent_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
-    }
+    },
 },{
      tableName: 'results',
 });

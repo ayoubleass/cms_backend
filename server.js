@@ -38,14 +38,8 @@ app.listen(PORT, async () => {
       const newUser = await User.create(userData);
       if(newUser) {
         console.log("Your account is created!!!");
-      }
-      
-          projects.map((p) => {
-            p.userId = 1 
-            Project.create(p);
-          })
+      }  
     }
-
     console.log(`Example app listening on PORT ${PORT}`);
   }catch(err) {
     console.log(err)

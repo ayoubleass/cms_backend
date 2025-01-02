@@ -32,5 +32,8 @@ router.delete('/project/:id', [isAuth], ProjectController.delete);
 
 //Results
 router.post('/projects/:id', [isAuth], ResultsController.create);
+router.get('/projects/:id/results', [isAuth],ProjectController.showProjectResults);
+
+
 
 module.exports = router;

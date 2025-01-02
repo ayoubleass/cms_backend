@@ -6,6 +6,7 @@ const isAuth = async (req, res, next) => {
     if (!connToken) return res.status(401).json({ error: "UNAUTHORIZED" });
     const user = await User.findOne({where : {connToken : connToken}});
     if (user === null) return res.status(401).json({ error: "UNAUTHORIZED" });
+    console.log(user.id);
     req.user = {
         id : user.id,
         isAdmin : user.isAdmin,
