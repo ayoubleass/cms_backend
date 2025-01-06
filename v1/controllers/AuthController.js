@@ -1,4 +1,4 @@
-const {User} = require('../../models/associations');
+const {User, Profile} = require('../../models/associations');
 const {verifyPassword, hashPassword} = require('../../utilities/hashPassword');
 const { v4: uuidv4 } = require('uuid');
 const sendMail = require('../../mail/sendEmail');
@@ -9,7 +9,8 @@ class Auth extends BaseController{
 
   static signUp = async(req, res) => {
     try {
-        const {name, email, password, phoneNumber, isAdmin} = req.body;
+        const {name, email, password, phoneNumber} = req.body;
+        console.log(req.body);
         const hashedPass = await hashPassword(password);
         const isSent =  await sendMail("signUp.html", req.body , "Welcome");
         if(isSent) {
@@ -18,7 +19,7 @@ class Auth extends BaseController{
                 email,
                 phoneNumber,
                 password : hashedPass,
-                isAdmin
+                isAdmin: null,
             });
             if (user === null) {
                 return res.status(400).json({error : "Failed to create user",});
@@ -27,8 +28,8 @@ class Auth extends BaseController{
             return res.json(userData);
         }
     }catch(err) {
-        console.error(err)
-        return res.status(500).json({error : "Something is wrong"});
+        console.error(err);
+        return res.status(500).json({error : "Something is wrong please if your smtp credentiels are correct"});
     }
   }
 
@@ -37,7 +38,7 @@ class Auth extends BaseController{
   static login = async(req, res) => {
     try {
         const {email, password} = req;
-        const user = await User.findOne({where : {email}});
+        const user = await User.findOne({where : {email}, include: {model : Profile}});
         if(user == null) {
             return res.status(404).json({ error : "user not found email must be incorrect", });
         }
@@ -82,8 +83,6 @@ class Auth extends BaseController{
   }
 
 
-
-
   static resetPassword = async (req, res) => {
     try {
         const {id, resetToken, password} = req.body;
@@ -103,8 +102,20 @@ class Auth extends BaseController{
         console.error(error);
         return res.status(500).json({error : "Failed to make changes"});
     }
+    }
 
-  }
+    static logOut = async(req, res) => {
+        try {
+            const id = req.user?.id;
+            const user = await User.findOne({ where: {id}});
+            user.connToken = null;
+            await user.save();
+            return res.status(201).json({});
+        }catch(err) {
+            console.log(err)
+            return res.status(500).json({error : 'Server error' });
+        }
+    }
 
 }
 

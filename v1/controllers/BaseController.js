@@ -5,7 +5,7 @@ class BaseController {
     
     static fillabale() {
         return {
-            'User' : ['name', 'email', 'isAdmin'],
+            'User' : ['name', 'email', 'isAdmin', 'Profile'],
             'Projects' : []
         }
     }

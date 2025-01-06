@@ -1,0 +1,199 @@
+PI Documentation: Project Management
+This API provides endpoints for managing projects, including creating, updating, deleting, and viewing project details, as well as associating results and suggestions with projects.
+
+Endpoints
+1. POST /projects
+Description: Registers a new project.
+Body Parameters:
+name (string): Project's name (required).
+description (string): Project's description.
+url (string): URL of the project.
+selectedCountry (object): Selected country for the project. (Requires code field).
+selectedLanguage (string): Language selected for the project (required).
+locationCode (string): Country location code (optional, used if selectedCountry is not provided).
+Success Response:
+Code: 201
+Content:
+json
+
+{
+  "id": 1,
+  "name": "New Project",
+  "description": "Description of the project",
+  "userId": 1,
+  "url": "https://project-url.com",
+  "locationCode": "US",
+  "selectedLanguage": "en"
+}
+Error Responses:
+Code: 400
+Content:
+json
+
+{
+  "error": "Missing fields name or locationCode or language"
+}
+Code: 500
+Content:
+json
+
+{
+  "error": "Failed to create project"
+}
+2. PUT /projects/:id
+Description: Updates an existing project by ID.
+Body Parameters:
+name (string): Project's name (optional).
+description (string): Project's description (optional).
+selectedLanguage (string): Project's selected language.
+locationCode (string): Project's country location code.
+selectedCountry (object): Selected country for the project. (Requires code field).
+Success Response:
+Code: 200
+Content:
+json
+
+{
+  "message": "Done, the project has been updated!"
+}
+Error Responses:
+Code: 400
+Content:
+json
+
+{
+  "error": "name or description are required"
+}
+Code: 404
+Content:
+json
+
+{
+  "error": "Project not found"
+}
+Code: 500
+Content:
+json
+
+{
+  "error": "Server error"
+}
+3. DELETE /projects/:id
+Description: Deletes a project by ID.
+Success Response:
+Code: 204
+Content: No content.
+Error Responses:
+Code: 404
+Content:
+json
+
+{
+  "error": "Project not found"
+}
+Code: 500
+Content:
+json
+
+{
+  "error": "Server error"
+}
+4. GET /projects/:id/results
+Description: Retrieves the results associated with a project by its ID.
+Success Response:
+Code: 200
+Content:
+json
+
+[
+  {
+    "id": 1,
+    "projectId": 1,
+    "data": "Result data",
+    "suggestions": [
+      {
+        "id": 2,
+        "parentId": 1,
+        "data": "Suggestion data"
+      }
+    ],
+    "monthlySearch": [
+      {
+        "month": "January",
+        "searchCount": 100
+      }
+    ]
+  }
+]
+Error Responses:
+Code: 404
+Content:
+json
+
+{
+  "error": "Project not found"
+}
+Code: 500
+Content:
+json
+
+{
+  "error": "Server error"
+}
+5. GET /projects
+Description: Lists all projects associated with the current user.
+Query Parameters:
+page (integer): The page number for pagination (optional).
+pageSize (integer): The number of projects per page (optional).
+Success Response:
+Code: 200
+Content:
+json
+
+[
+  {
+    "id": 1,
+    "name": "Project 1",
+    "description": "Description of project 1",
+    "userId": 1,
+    "url": "https://project1.com",
+    "locationCode": "US",
+    "selectedLanguage": "en"
+  },
+  {
+    "id": 2,
+    "name": "Project 2",
+    "description": "Description of project 2",
+    "userId": 1,
+    "url": "https://project2.com",
+    "locationCode": "US",
+    "selectedLanguage": "es"
+  }
+]
+Error Responses:
+Code: 500
+Content:
+json
+
+{
+  "error": "Server error"
+}
+Example Responses for Errors
+Failed to create project:
+
+json
+
+{ "error": "Failed to create project" }
+Missing fields:
+
+json
+
+{ "error": "Missing fields name or locationCode or language" }
+Server error:
+
+json
+
+{ "error": "Server error" }
+Usage Notes
+Authentication: Each of these endpoints requires the user to be authenticated. An authentication token should be included in the headers for each request.
+Error Handling: Responses include specific error messages to help users understand what went wrong (e.g., missing fields, invalid data, etc.).

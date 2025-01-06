@@ -12,6 +12,10 @@ const Result = sequelize.define('Result', {
         type: DataTypes.STRING,
         allowNull : false,
     },
+    location : {
+        type: DataTypes.STRING,
+        allowNull : true,
+    },
     keyword_difficulty:{
         type: DataTypes.INTEGER,
         allowNull: false,

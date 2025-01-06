@@ -13,11 +13,10 @@ class ResultsController extends BaseController {
             } 
             const results = [];
             for (const result of  req.body){
-                const {keyword, keyword_difficulty, search_volume, suggestions, monthlySearch} = result;
-                console.log(keyword_difficulty, keyword, search_volume);
-            
-                if (!keyword || !search_volume){
-                    console.log('missing');
+                const {keyword,location, keyword_difficulty, search_volume, suggestions, monthlySearch} = result;
+                console.log("===================================================== ===============",location);
+
+                if (!keyword || search_volume < 0){
                     return res.json({error : 'missing params'}); 
 
                 }
@@ -25,6 +24,7 @@ class ResultsController extends BaseController {
                 const searches = [];
                 const newResult = await Result.create({
                         keyword,
+                        locaions : location,
                         keyword_difficulty,
                         search_volume,
                         ProjectId: id
@@ -32,7 +32,7 @@ class ResultsController extends BaseController {
                 if (newResult) {
                         if (suggestions && suggestions.length > 0) {
                             for (const suggestion of suggestions){
-                                if(!suggestion.keyword || !suggestion.search_volume) {
+                                if(!suggestion.keyword || suggestion.search_volume < 0 ) {
                                     return res.json({error : "missing param"});
                                 }
                                 suggs.push(await Result.create({
@@ -69,16 +69,73 @@ class ResultsController extends BaseController {
         }
 
     }
-
     static async update (req, res) {
-        try {
-            const {} = req.body;
+        const t = await sequelize.transaction();
+        const { id } = req.params;
+        const project = await Project.findOne({ where: { id, userId: req.user.id } });
 
-        }catch (err) {
-            console.log (err);
+        if (!project) {
+            return res.status(404).json({ error: `Project with id ${id} is not found` });
+        }
+        const results = [];
+        const suggs = [];
+        const searches = [];
+        try {
+            await Result.destroy({
+                where: { ProjectId: id }
+            });
+
+            await MonthlySearch.destroy({
+                where: { ResultId: id }
+            });
+
+            for (const result of req.body) {
+                const { keyword,location , keyword_difficulty, search_volume, suggestions, monthlySearch, country } = result;
+                console.log("===================================================== ===============",location);
+                
+                const newResult = await Result.create({
+                    keyword,
+                    locations : location,
+                    keyword_difficulty,
+                    search_volume,
+                    country,
+                    ProjectId: id
+                });
+
+                if (suggestions && suggestions.length > 0) {
+                    for (const suggestion of suggestions) {
+                        suggs.push(await Result.create({
+                            keyword: suggestion.keyword,
+                            keyword_difficulty: suggestion.keyword_difficulty,
+                            search_volume: suggestion.search_volume,
+                            ProjectId: id,
+                            parent_id: newResult.id
+                        }));
+                    }
+                }
+                if (monthlySearch && monthlySearch.length > 0) {
+                    for (const m of monthlySearch) {
+                        searches.push(await MonthlySearch.create({
+                            year: m.year,
+                            search_volume: m.search_volume,
+                            month: m.month,
+                            ResultId: newResult.id,
+                        }));
+                    }
+                }
+                newResult.get()['suggestions'] = suggs;
+                newResult.get() ['monthlySearch'] = searches;
+                results.push(newResult);
+            }
+            await t.commit();
+            return res.status(200).json({results});
+        } catch (err) {
+            await t.rollback();
+            console.error(err);
             return res.status(500).json({ error: 'Server error' });
         }
     }
+
 }
 
 

@@ -1,0 +1,147 @@
+API Documentation: Results Management
+This API provides endpoints for managing results associated with a project, including creating, updating, and retrieving results, as well as managing suggestions and monthly search data related to those results.
+
+Endpoints
+1. POST /projects/:id/results
+Description: Creates new results for a project.
+Body Parameters:
+results (array): A list of result objects. Each result object contains:
+keyword (string): The keyword associated with the result (required).
+location (string): The location for the result (required).
+keyword_difficulty (integer): The difficulty of the keyword.
+search_volume (integer): The monthly search volume for the keyword (required, must be greater than or equal to 0).
+suggestions (array): A list of suggestions related to the result. Each suggestion object contains:
+keyword (string): The suggested keyword.
+keyword_difficulty (integer): The difficulty of the suggested keyword.
+search_volume (integer): The monthly search volume for the suggested keyword (must be greater than or equal to 0).
+monthlySearch (array): A list of monthly search data objects. Each object contains:
+year (integer): The year for the search data.
+search_volume (integer): The search volume for the month.
+month (integer): The month of the search data.
+Success Response:
+Code: 200
+Content:
+json
+
+{
+  "results": [
+    {
+      "id": 1,
+      "keyword": "Keyword 1",
+      "location": "Location 1",
+      "keyword_difficulty": 50,
+      "search_volume": 1000,
+      "suggestions": [
+        {
+          "id": 2,
+          "keyword": "Suggestion 1",
+          "keyword_difficulty": 30,
+          "search_volume": 500
+        }
+      ],
+      "monthlySearch": [
+        {
+          "id": 3,
+          "year": 2025,
+          "search_volume": 1000,
+          "month": 1
+        }
+      ]
+    }
+  ]
+}
+Error Responses:
+Code: 400
+Content:
+json
+
+{
+  "error": "Missing parameters"
+}
+Code: 404
+Content:
+json
+
+{
+  "error": "Project with id {id} is not found"
+}
+Code: 500
+Content:
+json
+
+{
+  "error": "Server error"
+}
+2. PUT /projects/:id/results
+Description: Updates existing results for a project. This will delete the existing results and monthly search data and replace them with the new data provided.
+Body Parameters:
+results (array): A list of result objects, similar to the POST request. Each result contains:
+keyword, location, keyword_difficulty, search_volume, suggestions, and monthlySearch as described above.
+Success Response:
+Code: 200
+Content:
+json
+
+{
+  "results": [
+    {
+      "id": 1,
+      "keyword": "Updated Keyword 1",
+      "location": "Location 1",
+      "keyword_difficulty": 50,
+      "search_volume": 1200,
+      "suggestions": [
+        {
+          "id": 2,
+          "keyword": "Updated Suggestion 1",
+          "keyword_difficulty": 30,
+          "search_volume": 600
+        }
+      ],
+      "monthlySearch": [
+        {
+          "id": 3,
+          "year": 2025,
+          "search_volume": 1200,
+          "month": 1
+        }
+      ]
+    }
+  ]
+}
+Error Responses:
+Code: 404
+Content:
+json
+
+{
+  "error": "Project with id {id} is not found"
+}
+Code: 400
+Content:
+json
+
+{
+  "error": "Missing parameters"
+}
+Code: 500
+Content:
+json {
+  "error": "Server error"
+}
+Example Responses for Errors
+Missing Parameters:
+
+json { "error": "Missing parameters" }
+Project Not Found:
+
+json 
+{ "error": "Project with id {id} is not found" }
+Server Error:
+
+json
+{ "error": "Server error" }
+Usage Notes
+Authentication: Each of these endpoints requires the user to be authenticated. An authentication token should be included in the headers for each request.
+Transaction Management: Both the POST /projects/:id/results and PUT /projects/:id/results endpoints use database transactions to ensure consistency. If any error occurs during the processing of results, suggestions, or monthly search data, the transaction is rolled back to avoid partial updates.
+Error Handling: Responses include specific error messages to help users understand what went wrong (e.g., missing parameters, invalid data, etc.).

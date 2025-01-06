@@ -74,6 +74,8 @@ class Validate {
         if (!module){
             throw Error("Please provide a module to check the record in the database");
         }
+        console.log('--------------' ,fieldName);
+        console.log('-----------------------------', this.fields[fieldName]);
         const user = await require('../models/'.concat(module)).findOne({
         where:{
             [Sequelize.Op.or]: [

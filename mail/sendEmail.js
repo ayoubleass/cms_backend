@@ -36,11 +36,12 @@ const sendMail = async (path,  data, subject) => {
             });
         }else {
             transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
                 service: process.env.SMTP_SERVICE,
                 secure: false,
                 auth: {
                     user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_APP_PASS,
+                    pass: process.env.SMTP_APP_PASSWORD,
                 },
             });
         }

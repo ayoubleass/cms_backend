@@ -2,7 +2,7 @@ const Auth = require('../v1/controllers/AuthController');
 const UserController = require('../v1/controllers/UsersController');
 const ProjectController = require('../v1/controllers/ProjectController');
 const ResultsController = require('../v1/controllers/ResultsController');
-
+const ProfileController = require('../v1/controllers/ProfileController');
 
 const  isAdmin = require('../middleware/isAdmin');
 const isAuth = require('../middleware/isAuth');
@@ -15,7 +15,7 @@ router.post('/signUp',signUpValidate,  Auth.signUp);
 router.post('/login', loginValidate,  Auth.login);
 router.post('/forgotPassword', Auth.forgotPassword);
 router.put('/resetPassword',resetPasswordValidate,  Auth.resetPassword);
-
+router.put('/logout', [isAuth], Auth.logOut);
 
 //User endpoints
 router.get('/users', [isAuth, isAdmin], UserController.showUsers);
@@ -28,12 +28,16 @@ router.delete('/users/:id', [isAuth, isAdmin], UserController.deleteUser);
 router.get('/projects', [isAuth], ProjectController.showProjects);
 router.post('/projects', [isAuth], ProjectController.create);
 router.put('/projects/:id',[isAuth], ProjectController.update);
-router.delete('/project/:id', [isAuth], ProjectController.delete);
+router.delete('/projects/:id', [isAuth], ProjectController.delete);
+router.get('/projects/:id/results', [isAuth],ProjectController.showProjectResults);
 
 //Results
 router.post('/projects/:id', [isAuth], ResultsController.create);
-router.get('/projects/:id/results', [isAuth],ProjectController.showProjectResults);
+router.put('/projects/:id/results', [isAuth], ResultsController.update);
 
 
+//Profile endpoints
+router.post('/profiles', isAuth, ProfileController.create);
+router.put('/profiles/:id', isAuth, ProfileController.update);
 
 module.exports = router;

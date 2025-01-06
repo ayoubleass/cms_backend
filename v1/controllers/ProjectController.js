@@ -7,7 +7,7 @@ const MonthlySearch = require("../../models/MonthlySearch");
 class ProjectController extends BaseController {
     static async create (req, res) {
         try {
-            const {name, description, url, selectedCountry , selectedLanguage,} = req.body;
+            const {name, description, url, selectedCountry , selectedLanguage, locationCode} = req.body;
             if(!name, !selectedCountry, !selectedLanguage) {
                 return res.status(401).json({error: 'Missing fields name or locationCode or language'});
             }
@@ -16,7 +16,7 @@ class ProjectController extends BaseController {
                 description,
                 userId : req.user.id,
                 url,
-                locationCode : selectedCountry.code,
+                locationCode : selectedCountry.code || locationCode,
                 selectedLanguage,
             });
             if(newProject === null){
@@ -31,7 +31,7 @@ class ProjectController extends BaseController {
     
     static async update (req, res)  {
         const {id} = req.params;
-        const {name, description, locationCode, selectedLanguage} = req.body;
+        const {name, description, selectedLanguage, locationCode, selectedCountry} = req.body;
         const project = await Project.findByPk(id);
         if(project === null) {
             return res.status(404).json({error : 'project not found'});
@@ -42,9 +42,10 @@ class ProjectController extends BaseController {
         project.name = name;
         project.description = description;
         project.selectedLanguage = selectedLanguage,
-        project.locationCode = locationCode;
+        project.locationCode = locationCode || selectedCountry.code;
         await project.save();
-        return res.json({message : "Done the project has been created!"})
+        console.log(project);
+        return res.json({message : "Done the project has been updated!"})
     }
     
     static async delete (req, res)  {

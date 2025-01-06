@@ -22,6 +22,7 @@ const signUpValidate =  async (req, res, next) => {
                                 },
                         phoneNumber : {required : true , unique : { module : 'User'}}
                     });
+    console.log(req.body);
     const errors = validator.getErrors();
     if(errors && Object.entries(errors).length > 0){
         return res.status(400).json({ errors });
@@ -42,6 +43,7 @@ const loginValidate = async (req, res, next) => {
     }
     const decodedData = Buffer.from(data, 'base64').toString();
     const [email, password] = decodedData.split(':');
+    console.log(email, password);
     const validator= new Validate({email, password});
     await validator.rules({
                         password : {
