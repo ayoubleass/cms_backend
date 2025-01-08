@@ -16,7 +16,7 @@ class ProjectController extends BaseController {
                 description,
                 userId : req.user.id,
                 url,
-                locationCode : selectedCountry.code || locationCode,
+                locationCode : selectedCountry?.code || locationCode,
                 selectedLanguage,
             });
             if(newProject === null){

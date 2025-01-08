@@ -13,12 +13,13 @@ class ResultsController extends BaseController {
             } 
             const results = [];
             for (const result of  req.body){
-                const {keyword,location, keyword_difficulty, search_volume, suggestions, monthlySearch} = result;
-                console.log("===================================================== ===============",location);
-
+                let {keyword,location, keyword_difficulty, search_volume, suggestions, monthlySearch} = result;
                 if (!keyword || search_volume < 0){
                     return res.json({error : 'missing params'}); 
 
+                }
+                if(keyword_difficulty instanceof Array) {
+                    keyword_difficulty = 0;
                 }
                 const suggs = [];
                 const searches = [];
@@ -90,12 +91,13 @@ class ResultsController extends BaseController {
             });
 
             for (const result of req.body) {
-                const { keyword,location , keyword_difficulty, search_volume, suggestions, monthlySearch, country } = result;
-                console.log("===================================================== ===============",location);
-                
+                let { keyword,location , keyword_difficulty, search_volume, suggestions, monthlySearch, country } = result;
+                if(keyword_difficulty instanceof Array) {
+                    keyword_difficulty = 0;
+                }
                 const newResult = await Result.create({
                     keyword,
-                    locations : location,
+                    location,
                     keyword_difficulty,
                     search_volume,
                     country,
